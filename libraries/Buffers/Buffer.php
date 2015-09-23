@@ -2,6 +2,8 @@
 
 namespace bnphpbot\Libraries\Buffers;
 
+use \OutOfBoundsException;
+
 class Buffer {
 
   private $carray;
@@ -14,12 +16,24 @@ class Buffer {
     $this->trim   = $trim;
   }
 
+  public function getLength() {
+    return strlen($this->carray);
+  }
+
   public function getPosition() {
     return $this->cursor;
   }
 
   public function readByte() {
     return $this->readUInt8();
+  }
+
+  public function readCString() {
+    $null = chr(0); $buf = "";
+    do {
+      $buf .= $this->readRaw(1);
+    } while (substr($buf, -1) !== $null);
+    return substr($buf, 0, -1);
   }
 
   public function readUInt8() {
@@ -59,6 +73,8 @@ class Buffer {
   }
 
   public function &readRaw($length) {
+    if ($this->cursor + $length > strlen($this->carray))
+      throw new OutOfBoundsException();
     $ret_carray = substr($this->carray, $this->cursor, $length);
     if ($this->trim) {
       $this->carray = substr($this->carray, $this->cursor + $length);
@@ -79,6 +95,11 @@ class Buffer {
 
   public function writeByte($val) {
     return $this->writeUInt8($val);
+  }
+
+  public function writeCString($val) {
+    $buf = $val . chr(0);
+    return $this->writeRaw($buf);
   }
 
   public function writeUInt8($val) {

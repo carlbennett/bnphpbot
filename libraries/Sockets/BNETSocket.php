@@ -17,11 +17,13 @@ class BNETSocket extends TCPSocket {
     $this->buffer->writeUInt8(8);
     $this->buffer->writeUInt16(27045);
     $this->buffer->writeUInt32(306735525);
+    $this->buffer->writeCString("Hello World");
     $this->buffer->writeUInt64(6917535624717139974);
     $this->buffer->setPosition(0);
     var_dump($this->buffer->readUInt8());
     var_dump($this->buffer->readUInt16());
     var_dump($this->buffer->readUInt32());
+    var_dump($this->buffer->readCString());
     var_dump($this->buffer->readUInt64());
     // REMOVE ABOVE THIS LINE
   }
