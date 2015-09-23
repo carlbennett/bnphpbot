@@ -1,0 +1,65 @@
+{
+  "bnphpbot": {
+    "profiles": [
+      {
+        "backup_channel": null,
+        "battle.net": {
+          "cdkey": null,
+          "cdkey_expansion": null,
+          "cdkey_owner": "bnphpbot",
+          "email_address": null,
+          "hostname": "bnls.bnetdocs.org",
+          "password": "bnphpbot",
+          "platform": "IX86",
+          "port": 6112,
+          "product": "CHAT",
+          "udp_support": true,
+          "username": "bnphpbot",
+          "version_byte": null
+        },
+        "bnls": {
+          "hostname": "bnls.bnetdocs.org",
+          "port": 9367,
+          "usage": {
+            "authentication": true,
+            "cdkey": true,
+            "version_byte": true,
+            "version_check": true
+          }
+        },
+        "filters": {
+          "filter_broadcast_message": false,
+          "filter_error_message": false,
+          "filter_info_message": false,
+          "filter_join_message": false,
+          "filter_part_message": false
+        },
+        "home_channel": "Op bnphpbot",
+        "rejoin_on_kick": true
+      }
+    ]
+  },
+  "memcache": {
+    "connect_timeout": 1.0,
+    "tcp_nodelay": true,
+    "servers": [
+      {
+        "hostname": "localhost",
+        "port": 11211
+      }
+    ]
+  },
+  "mysql": {
+    "character_set": "utf8",
+    "database": "bnphpbot",
+    "password": "",
+    "servers": [
+      {
+        "hostname": "localhost",
+        "port": 3306
+      }
+    ],
+    "timeout": 3,
+    "username": "bnphpbot"
+  }
+}
