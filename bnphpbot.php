@@ -7,6 +7,7 @@ use \Exception;
 use \bnphpbot\Libraries\Common;
 use \bnphpbot\Libraries\Logger;
 use \bnphpbot\Libraries\Pair;
+use \bnphpbot\Libraries\Profile;
 
 function autoload($c) {
   if (substr($c, 0, 9) == "bnphpbot\\") $c = substr($c, 9);
@@ -60,9 +61,10 @@ function main(&$argc, &$argv) {
   pcntl_signal(SIGTERM, "\bnphpbot\sig_handler");
   pcntl_signal(SIGUSR1, "\bnphpbot\sig_handler");
 
-  Logger::writeLine("Running...");
+  Profile::connectAll();
   while (!Common::$exit_trap) {
-    sleep(1);
+    Common::processWork();
+    sleep(0.1);
     pcntl_signal_dispatch();
   };
 

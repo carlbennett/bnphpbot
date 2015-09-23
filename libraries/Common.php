@@ -18,6 +18,19 @@ final class Common {
     Profile::loadAllProfiles();
   }
 
+  public static function processWork() {
+    foreach (Common::$profiles as $profile) {
+      $bnet = $profile->getSocketBattlenet();
+      $bnls = $profile->getSocketBNLS();
+      if (!is_null($bnls)) {
+        $bnls->poll();
+      }
+      if (!is_null($bnet)) {
+        $bnet->poll();
+      }
+    }
+  }
+
   public static function &versionProperties() {
     $version = new StdClass();
     $version->bnphpbot = "0.1.0";

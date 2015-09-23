@@ -67,14 +67,133 @@ class Profile {
     $this->home_channel              = null;
     $this->id                        = $id;
     $this->rejoin_on_kick            = null;
-    $this->socket_battlenet          = new BNETSocket();
+    $this->socket_battlenet          = new BNETSocket($this);
     $this->socket_bnls               = null;
 
-    if ($this->bnls_usage_authentication ||
-        $this->bnls_usage_cdkey ||
-        $this->bnls_usage_version_byte ||
-        $this->bnls_usage_version_check)
-      $this->socket_bnls = new BNLSSocket();
+  }
+
+  public static function connectAll() {
+    $success = true;
+    foreach (Common::$profiles as $o) {
+      if (!$o->connect()) $success = false;
+    }
+    return $success;
+  }
+
+  public function connect() {
+    return $this->socket_battlenet->connect();
+  }
+
+  public function getBackupChannel() {
+    return $this->backup_channel;
+  }
+
+  public function getBattlenetCDKey() {
+    return $this->battlenet_cdkey;
+  }
+
+  public function getBattlenetCDKeyExpansion() {
+    return $this->battlenet_cdkey_expansion;
+  }
+
+  public function getBattlenetCDKeyOwner() {
+    return $this->battlenet_cdkey_owner;
+  }
+
+  public function getBattlenetEmailAddress() {
+    return $this->battlenet_email_address;
+  }
+
+  public function getBattlenetHostname() {
+    return $this->battlenet_hostname;
+  }
+
+  public function getBattlenetPassword() {
+    return $this->battlenet_password;
+  }
+
+  public function getBattlenetPlatform() {
+    return $this->battlenet_platform;
+  }
+
+  public function getBattlenetPort() {
+    return $this->battlenet_port;
+  }
+
+  public function getBattlenetProduct() {
+    return $this->battlenet_product;
+  }
+
+  public function getBattlenetUDPSupport() {
+    return $this->battlenet_udp_support;
+  }
+
+  public function getBattlenetUsername() {
+    return $this->battlenet_username;
+  }
+
+  public function getBattlenetVersionByte() {
+    return $this->battlenet_version_byte;
+  }
+
+  public function getBNLSHostname() {
+    return $this->bnls_hostname;
+  }
+
+  public function getBNLSPort() {
+    return $this->bnls_port;
+  }
+
+  public function getBNLSUsageAuthentication() {
+    return $this->bnls_usage_authentication;
+  }
+
+  public function getBNLSUsageCDKey() {
+    return $this->bnls_usage_cdkey;
+  }
+
+  public function getBNLSUsageVersionByte() {
+    return $this->bnls_usage_version_byte;
+  }
+
+  public function getBNLSUsageVersionCheck() {
+    return $this->bnls_usage_version_check;
+  }
+
+  public function getFilterBroadcastMessage() {
+    return $this->filter_broadcast_message;
+  }
+
+  public function getFilterErrorMessage() {
+    return $this->filter_error_message;
+  }
+
+  public function getFilterInfoMessage() {
+    return $this->filter_info_message;
+  }
+
+  public function getFilterJoinMessage() {
+    return $this->filter_join_message;
+  }
+
+  public function getFilterPartMessage() {
+    return $this->filter_part_message;
+  }
+
+  public function getHomeChannel() {
+    return $this->home_channel;
+  }
+
+  public function getRejoinOnKick() {
+    return $this->rejoin_on_kick;
+  }
+
+  public function getSocketBattlenet() {
+    return $this->socket_battlenet;
+  }
+
+  public function getSocketBNLS() {
+    return $this->socket_bnls;
   }
 
   public static function loadAllProfiles() {
@@ -110,6 +229,11 @@ class Profile {
       $o->filter_part_message       = $a->filters->filter_part_message;
       $o->home_channel              = $a->home_channel;
       $o->rejoin_on_kick            = $a->rejoin_on_kick;
+      if ($o->bnls_usage_authentication ||
+          $o->bnls_usage_cdkey ||
+          $o->bnls_usage_version_byte ||
+          $o->bnls_usage_version_check)
+        $o->socket_bnls = new BNLSSocket($o);
       Common::$profiles->attach($o);
     }
     $count = Common::$profiles->count();

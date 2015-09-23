@@ -3,29 +3,34 @@
 namespace bnphpbot\Libraries\Sockets;
 
 use \bnphpbot\Libraries\Buffers\BNETBuffer;
+use \bnphpbot\Libraries\Profile;
 use \bnphpbot\Libraries\Sockets\TCPSocket;
 
 class BNETSocket extends TCPSocket {
 
   protected $buffer;
+  protected $profile;
 
-  public function __construct() {
+  public function __construct(Profile &$profile) {
     parent::__construct();
-    $this->buffer = new BNETBuffer();
+    $this->buffer  = new BNETBuffer();
+    $this->profile = &$profile;
+  }
 
-    // TESTING THE BUFFER, DEBUG ONLY:
-    $this->buffer->writeUInt8(8);
-    $this->buffer->writeUInt16(27045);
-    $this->buffer->writeUInt32(306735525);
-    $this->buffer->writeCString("Hello World");
-    $this->buffer->writeUInt64(6917535624717139974);
+  public function connect() {
+    return parent::connect(
+      $this->profile->getBattlenetHostname(),
+      $this->profile->getBattlenetPort()
+    );
+  }
+
+  public function poll() {
+    $data = "";
+    $this->recv($data, 1500, MSG_DONTWAIT);
+    if (is_null($data)) return;
+    $this->buffer->writeRaw($data);
     $this->buffer->setPosition(0);
-    var_dump($this->buffer->readUInt8());
-    var_dump($this->buffer->readUInt16());
-    var_dump($this->buffer->readUInt32());
-    var_dump($this->buffer->readCString());
-    var_dump($this->buffer->readUInt64());
-    // REMOVE ABOVE THIS LINE
+    $this->buffer->parsePacket();
   }
 
 }
