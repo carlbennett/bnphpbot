@@ -13,7 +13,7 @@ class BNETSocket extends TCPSocket {
 
   public function __construct(Profile &$profile) {
     parent::__construct();
-    $this->set_nonblock();
+    //$this->set_nonblock();
     $this->buffer  = new BNETBuffer();
     $this->profile = &$profile;
   }
