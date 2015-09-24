@@ -4,6 +4,7 @@ namespace bnphpbot\Libraries\Sockets;
 
 class Socket {
 
+  private $connected;
   private $socket;
 
   public function __construct($domain, $type, $protocol) {
@@ -23,7 +24,9 @@ class Socket {
   }
 
   public function close() {
-    return socket_close($this->socket);
+    $ret = socket_close($this->socket);
+    $this->connected = false;
+    return $ret;
   }
 
   public function cmsg_space($level, $type) {
@@ -31,7 +34,12 @@ class Socket {
   }
 
   public function connect($address, $port = 0) {
-    return socket_connect($this->socket, $address, $port);
+    $this->connected = socket_connect($this->socket, $address, $port);
+    return $this->connected;
+  }
+
+  public function connected() {
+    return $this->connected;
   }
 
   public function get_option($level, $optname) {
@@ -99,7 +107,7 @@ class Socket {
   }
 
   public static function strerror($errno) {
-    return socket_strerr($errno);
+    return socket_strerror($errno);
   }
 
   public function write($buffer, $length = 0) {

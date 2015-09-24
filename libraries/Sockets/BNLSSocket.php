@@ -13,20 +13,26 @@ class BNLSSocket extends TCPSocket {
 
   public function __construct(Profile &$profile) {
     parent::__construct();
+    $this->set_nonblock();
     $this->buffer  = new BNLSBuffer();
     $this->profile = &$profile;
   }
 
   public function connect() {
-    return parent::connect(
-      $this->profile->getBNLSHostname(),
-      $this->profile->getBNLSPort()
-    );
+    $hostname    = $this->profile->getBNLSHostname();
+    $port        = $this->profile->getBNLSPort();
+    $timeout     = 3;
+    $maxtime     = microtime(true) + $timeout;
+    do {
+      $connected = @parent::connect($hostname, $port);
+    } while (!$connected && microtime(true) < $maxtime);
+    return $connected;
   }
 
   public function poll() {
-    $data = "";
-    $this->recv($data, 1500, MSG_DONTWAIT);
+    if (!$this->connected()) return;
+    $data = $this->read(4096, PHP_BINARY_READ);
+    if ($data === false) return;
     $this->buffer->writeRaw($data);
     $this->buffer->setPosition(0);
     $this->buffer->parsePacket();

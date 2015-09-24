@@ -13,21 +13,26 @@ class BNETSocket extends TCPSocket {
 
   public function __construct(Profile &$profile) {
     parent::__construct();
+    $this->set_nonblock();
     $this->buffer  = new BNETBuffer();
     $this->profile = &$profile;
   }
 
   public function connect() {
-    return parent::connect(
-      $this->profile->getBattlenetHostname(),
-      $this->profile->getBattlenetPort()
-    );
+    $hostname    = $this->profile->getBattlenetHostname();
+    $port        = $this->profile->getBattlenetPort();
+    $timeout     = 3;
+    $maxtime     = microtime(true) + $timeout;
+    do {
+      $connected = @parent::connect($hostname, $port);
+    } while (!$connected && microtime(true) < $maxtime);
+    return $connected;
   }
 
   public function poll() {
-    $data = "";
-    $this->recv($data, 1500, MSG_DONTWAIT);
-    if (is_null($data)) return;
+    if (!$this->connected()) return;
+    $data = $this->read(4096, PHP_BINARY_READ);
+    if ($data === false) return;
     $this->buffer->writeRaw($data);
     $this->buffer->setPosition(0);
     $this->buffer->parsePacket();
