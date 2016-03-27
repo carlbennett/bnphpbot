@@ -8,12 +8,14 @@ class Buffer {
 
   private $carray;
   private $cursor;
+  private $insert;
   private $trim;
 
-  public function __construct($trim = true) {
-    $this->carray = "";
-    $this->cursor = 0;
-    $this->trim   = $trim;
+  public function __construct($insert = true, $trim = true) {
+    $this->carray = "";      // Character array
+    $this->cursor = 0;       // Cursor in character array
+    $this->insert = $insert; // Overwrite bytes, don't append
+    $this->trim   = $trim;   // Auto trim buffer after read
   }
 
   public function getLength() {
@@ -116,7 +118,7 @@ class Buffer {
   public function writeUInt32($val) {
     $buf =
       chr( $val        & 0xFF).
-      chr(($val >> 8)  & 0xFF).
+      chr(($val >> 8 ) & 0xFF).
       chr(($val >> 16) & 0xFF).
       chr(($val >> 24) & 0xFF);
     return $this->writeRaw($buf);
@@ -125,7 +127,7 @@ class Buffer {
   public function writeUInt64($val) {
     $buf =
       chr( $val        & 0xFF).
-      chr(($val >> 8)  & 0xFF).
+      chr(($val >> 8 ) & 0xFF).
       chr(($val >> 16) & 0xFF).
       chr(($val >> 24) & 0xFF).
       chr(($val >> 32) & 0xFF).
@@ -136,10 +138,11 @@ class Buffer {
   }
 
   public function writeRaw(&$raw) {
+    $xlen = ($this->insert ? strlen($raw) : 0);
     $this->carray
       = substr($this->carray, 0, $this->cursor)
       . $raw
-      . substr($this->carray, $this->cursor);
+      . substr($this->carray, $this->cursor + $xlen);
     $this->cursor += strlen($raw);
   }
 

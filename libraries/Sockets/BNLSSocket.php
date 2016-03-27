@@ -26,6 +26,7 @@ class BNLSSocket extends TCPSocket {
     do {
       $connected = @parent::connect($hostname, $port);
     } while (!$connected && microtime(true) < $maxtime);
+    if ($connected) $this->set_nonblock();
     return $connected;
   }
 
