@@ -81,7 +81,7 @@ class Profile {
   }
 
   public function connect() {
-    return $this->socket_battlenet->connect();
+    return $this->socket_bnls->connect();
   }
 
   public function getBackupChannel() {
@@ -234,6 +234,8 @@ class Profile {
           $o->bnls_usage_version_byte ||
           $o->bnls_usage_version_check)
         $o->socket_bnls = new BNLSSocket($o);
+      $o->battlenet_product = Common::convertRawToBNETProduct($o->battlenet_product);
+      $o->battlenet_platform = Common::convertRawToBNETPlatform($o->battlenet_platform);
       Common::$profiles->attach($o);
     }
     $count = Common::$profiles->count();

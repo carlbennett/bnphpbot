@@ -17,6 +17,7 @@ class BNETSocket extends TCPSocket {
 
   public function __construct(Profile &$profile) {
     parent::__construct();
+    $this->set_nonblock();
     $this->buffer            = new BNETBuffer();
     $this->initial_handshake = false;
     $this->profile           = &$profile;
@@ -38,7 +39,6 @@ class BNETSocket extends TCPSocket {
       Logger::writeLine("BNET: Connected in "
         . round((microtime(true) - $curtime) * 1000) . "ms"
       );
-      $this->set_nonblock();
     }
     $this->was_connected = $connected;
     return $connected;

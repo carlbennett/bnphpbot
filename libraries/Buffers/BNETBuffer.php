@@ -39,6 +39,7 @@ class BNETBuffer extends Buffer {
         return false;
       }
     }
+    return true;
   }
 
 }

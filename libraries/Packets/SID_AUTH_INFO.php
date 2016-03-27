@@ -29,8 +29,8 @@ class SID_AUTH_INFO extends BNETPacket {
     $buffer->writeUInt16(4);
     
     $buffer->writeUInt32($this->protocol_id);
-    $buffer->writeRaw($this->platform_id);
-    $buffer->writeRaw($this->product_id);
+    $buffer->writeUInt32($this->platform_id);
+    $buffer->writeUInt32($this->product_id);
     $buffer->writeUInt32($this->version_byte);
     $buffer->writeUInt32($this->product_language);
     $buffer->writeUInt32($this->local_ip);
