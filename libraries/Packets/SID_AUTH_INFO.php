@@ -49,6 +49,7 @@ class SID_AUTH_INFO extends BNETPacket {
 
   public function receive(&$socket, &$buffer) {
     Logger::writeLine("RECV: SID_AUTH_INFO", true);
+    $socket->close();
   }
 
 }

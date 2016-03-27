@@ -28,8 +28,7 @@ class SID_PING extends BNETPacket {
   public function receive(&$socket, &$buffer) {
     Logger::writeLine("RECV: SID_PING", true);
     $this->ping_value = $buffer->readUInt32();
-    $pkt = $this->send(); $len = $pkt->getLength();
-    $socket->send($pkt->readRaw($len), $len, 0);
+    $socket->sendPacket($this);
   }
 
 }

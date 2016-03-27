@@ -3,6 +3,7 @@
 namespace bnphpbot\Libraries\Sockets;
 
 use \bnphpbot\Libraries\Buffers\BNETBuffer;
+use \bnphpbot\Libraries\Logger;
 use \bnphpbot\Libraries\Packets\SID_AUTH_INFO;
 use \bnphpbot\Libraries\Profile;
 use \bnphpbot\Libraries\Sockets\TCPSocket;
@@ -28,11 +29,17 @@ class BNETSocket extends TCPSocket {
     $hostname                = $this->profile->getBattlenetHostname();
     $port                    = $this->profile->getBattlenetPort();
     $timeout                 = 3;
-    $maxtime                 = microtime(true) + $timeout;
+    $curtime                 = microtime(true);
+    $maxtime                 = $curtime + $timeout;
     do {
       $connected = @parent::connect($hostname, $port);
     } while (!$connected && microtime(true) < $maxtime);
-    if ($connected) $this->set_nonblock();
+    if ($connected) {
+      Logger::writeLine("BNET: Connected in "
+        . round((microtime(true) - $curtime) * 1000) . "ms"
+      );
+      $this->set_nonblock();
+    }
     $this->was_connected = $connected;
     return $connected;
   }
@@ -54,23 +61,27 @@ class BNETSocket extends TCPSocket {
     $pkt->language_id = 0;
     $pkt->country_abbreviation = "USA";
     $pkt->country = "United States";
-    $pkt = $pkt->send(); $len = $pkt->getLength();
-    $this->send($pkt->readRaw($len), $len, 0);
+    $this->sendPacket($pkt);
   }
 
   public function poll() {
     $connected = $this->connected();
     if ($this->was_connected && !$connected) {
       $this->was_connected = $connected;
-      \bnphpbot\Libraries\Logger::writeLine("Disconnected from Battle.net.", true);
-      return;
+      Logger::writeLine("BNET: Disconnected");
     }
+    if (!$connected) return;
     if (!$this->initial_handshake) $this->initialHandshake();
-    $data = $this->read(4096, PHP_BINARY_READ);
+    $data = $this->read(1500, PHP_BINARY_READ);
     if ($data === false) return;
     $this->buffer->writeRaw($data);
     $this->buffer->setPosition(0);
     $this->buffer->parsePacket($this);
+  }
+
+  public function sendPacket(&$packet) {
+    $buffer = $packet->send(); $len = $buffer->getLength();
+    return $this->send($buffer->readRaw($len), $len, 0);
   }
 
 }
