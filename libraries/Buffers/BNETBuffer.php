@@ -18,6 +18,10 @@ class BNETBuffer extends Buffer {
     $length  = $this->readUInt16();
     if ($padding !== 255) {
       Logger::writeLine("BNETBuffer: Invalid packet padding", true);
+      Logger::writeLine(
+        "BNETBuffer: Dumping contents of buffer and starting over", true
+      );
+      $this->setPosition($this->getLength()); $this->trim();
       return false;
     }
     if ($this->getLength() + 4 < $length) return false;
