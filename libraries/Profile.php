@@ -38,6 +38,7 @@ class Profile {
   protected $rejoin_on_kick;
   protected $socket_battlenet;
   protected $socket_bnls;
+  protected $state;
 
   public function __construct($id) {
     $this->backup_channel            = null;
@@ -69,7 +70,7 @@ class Profile {
     $this->rejoin_on_kick            = null;
     $this->socket_battlenet          = new BNETSocket($this);
     $this->socket_bnls               = null;
-
+    $this->state                     = [];
   }
 
   public static function connectAll() {
@@ -194,6 +195,10 @@ class Profile {
 
   public function getSocketBNLS() {
     return $this->socket_bnls;
+  }
+
+  public function &getState() {
+    return $this->state;
   }
 
   public static function loadAllProfiles() {

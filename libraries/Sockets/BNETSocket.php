@@ -44,23 +44,32 @@ class BNETSocket extends TCPSocket {
     return $connected;
   }
 
+  public function getProfile() {
+    return $this->profile;
+  }
+
   protected function initialHandshake() {
     $this->initial_handshake = true;
+    $state = $this->profile->getState();
+
+    $verbyte = (isset($state["version_byte"]) ? $state["version_byte"] :
+      $this->profile->getBattlenetVersionByte());
 
     $this->send("\x01", 1, 0); // Protocol byte
     
     $pkt = new SID_AUTH_INFO();
-    $pkt->protocol_id = 0;
-    $pkt->platform_id = strrev($this->profile->getBattlenetPlatform());
-    $pkt->product_id = strrev($this->profile->getBattlenetProduct());
-    $pkt->version_byte = $this->profile->getBattlenetVersionByte();
-    $pkt->product_language = 0;
-    $pkt->local_ip = 0;
-    $pkt->timezone_bias = 0;
-    $pkt->locale_id = 0;
-    $pkt->language_id = 0;
+    $pkt->protocol_id          = 0;
+    $pkt->platform_id          = $this->profile->getBattlenetPlatform();
+    $pkt->product_id           = $this->profile->getBattlenetProduct();
+    $pkt->version_byte         = $verbyte;
+    $pkt->product_language     = 0;
+    $pkt->local_ip             = 0;
+    $pkt->timezone_bias        = 0;
+    $pkt->locale_id            = 0;
+    $pkt->language_id          = 0;
     $pkt->country_abbreviation = "USA";
-    $pkt->country = "United States";
+    $pkt->country              = "United States";
+
     $this->sendPacket($pkt);
   }
 

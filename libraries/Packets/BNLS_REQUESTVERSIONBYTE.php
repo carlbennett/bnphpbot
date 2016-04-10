@@ -31,6 +31,11 @@ class BNLS_REQUESTVERSIONBYTE extends BNLSPacket {
     $this->version_byte = (
       $this->product_id == 0x00 ? null : $buffer->readUInt32()
     );
+
+    $profile               = $socket->getProfile();
+    $state                 = $profile->getState();
+    $state["version_byte"] = $this->version_byte;
+    $profile->getSocketBattlenet()->connect();
   }
 
 }
