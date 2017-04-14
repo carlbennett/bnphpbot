@@ -3,6 +3,7 @@
 namespace bnphpbot\Libraries;
 
 use \Exception;
+use \RuntimeException;
 use \SplObjectStorage;
 use \StdClass;
 use \bnphpbot\Libraries\Profile;
@@ -130,6 +131,9 @@ final class Common {
       if (!is_null($bnet)) {
         $bnet->poll();
       }
+      try { $item = $profile->queuePop(); }
+      catch (RuntimeException $e) { $item = null; }
+      if ($item) Profile::queueProcess($item);
     }
   }
 

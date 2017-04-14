@@ -2,8 +2,11 @@
 
 namespace bnphpbot\Libraries;
 
+use \LogicException;
+use \SplQueue;
 use \bnphpbot\Libraries\Common;
 use \bnphpbot\Libraries\Logger;
+use \bnphpbot\Libraries\MessageItem;
 use \bnphpbot\Libraries\Sockets\BNETSocket;
 use \bnphpbot\Libraries\Sockets\BNLSSocket;
 
@@ -35,6 +38,7 @@ class Profile {
   protected $filter_part_message;
   protected $home_channel;
   protected $id;
+  protected $message_queue;
   protected $rejoin_on_kick;
   protected $socket_battlenet;
   protected $socket_bnls;
@@ -67,6 +71,7 @@ class Profile {
     $this->filter_part_message       = null;
     $this->home_channel              = null;
     $this->id                        = $id;
+    $this->message_queue             = new SplQueue();
     $this->rejoin_on_kick            = null;
     $this->socket_battlenet          = new BNETSocket($this);
     $this->socket_bnls               = null;
@@ -246,6 +251,35 @@ class Profile {
     $count = Common::$profiles->count();
     Logger::writeLine("Loaded $count profile" . ($count != 1 ? "s" : ""));
     return $count;
+  }
+
+  public function queuePop() {
+    return $this->message_queue->pop();
+  }
+
+  public function queueProcess(MessageItem &$item) {
+    switch ($item->getType()) {
+      case MessageItem::TYPE_PACKET_BNET: {
+        $pkt = $item->getValue();
+        if ($pkt instanceof SID_PING) {
+          
+        }
+        break;
+      }
+      case MessageItem::TYPE_PACKET_BNLS: {
+
+        break;
+      }
+      case MessageItem::TYPE_CHAT_MESSAGE: {
+        throw new LogicException("Chat messages not yet implemented");
+        break;
+      }
+      default: throw new LogicException("Unknown message item type");
+    }
+  }
+
+  public function queuePush(MessageItem &$item) {
+    return $this->message_queue->push($item);
   }
 
 }

@@ -79,7 +79,7 @@ class SID_AUTH_INFO extends BNETPacket {
     $state["version_check_mpq_time"] = $this->mpq_filetime;
     $state["version_check_checksum"] = $this->checksum;
     $state["server_signature"]       = $this->signature;
-
+    
     $pkt = new BNLS_VERSIONCHECKEX2();
 
     $pkt->product_id   = Common::convertBNETProductToBNLS(

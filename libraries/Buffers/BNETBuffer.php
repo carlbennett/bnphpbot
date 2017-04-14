@@ -4,6 +4,7 @@ namespace bnphpbot\Libraries\Buffers;
 
 use \bnphpbot\Libraries\Buffers\Buffer;
 use \bnphpbot\Libraries\Logger;
+use \bnphpbot\Libraries\MessageItem;
 use \bnphpbot\Libraries\Packets\SID_AUTH_INFO;
 use \bnphpbot\Libraries\Packets\SID_NULL;
 use \bnphpbot\Libraries\Packets\SID_PING;
@@ -43,6 +44,9 @@ class BNETBuffer extends Buffer {
         return false;
       }
     }
+    $socket->getProfile()->queuePush(new MessageItem(
+      MessageItem::TYPE_PACKET_BNET, $pkt
+    ));
     return true;
   }
 
