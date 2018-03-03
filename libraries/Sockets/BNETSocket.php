@@ -56,7 +56,7 @@ class BNETSocket extends TCPSocket {
       $this->profile->getBattlenetVersionByte());
 
     $this->send("\x01", 1, 0); // Protocol byte
-    
+
     $pkt = new SID_AUTH_INFO();
     $pkt->protocol_id          = 0;
     $pkt->platform_id          = $this->profile->getBattlenetPlatform();
