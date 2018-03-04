@@ -2,7 +2,6 @@
 
 namespace bnphpbot\Libraries;
 
-use \bnphpbot\Libraries\Packets\Packet;
 use \bnphpbot\Libraries\Pair;
 
 class MessageItem extends Pair {
