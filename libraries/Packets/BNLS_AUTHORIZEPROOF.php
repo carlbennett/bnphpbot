@@ -14,6 +14,7 @@ class BNLS_AUTHORIZEPROOF extends BNLSPacket {
 
   public $checksum;
   public $status;
+  public $ip_address;
 
   public function &send() {
     $buffer = new BNLSBuffer();
@@ -27,18 +28,11 @@ class BNLS_AUTHORIZEPROOF extends BNLSPacket {
     return $buffer;
   }
 
-  public function receive(&$socket, &$buffer) {
+  public function receive( &$buffer ) {
     Logger::writeLine("RECV: BNLS_AUTHORIZEPROOF", true);
-    $this->status = $buffer->readUInt32();
-    if ($this->status != 0x00) {
-      Logger::writeLine("BNLS: You are not authorized to use this server");
-      $socket->close(); return;
-    }
-    $pkt = new BNLS_REQUESTVERSIONBYTE();
-    $pkt->product_id = Common::convertBNETProductToBNLS(
-      $socket->getProfile()->getBattlenetProduct()
-    );
-    $socket->sendPacket($pkt);
+
+    $this->status     = $buffer->readUInt32();
+    $this->ip_address = $buffer->readUInt32();
   }
 
 }

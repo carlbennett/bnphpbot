@@ -2,6 +2,7 @@
 
 namespace bnphpbot\Libraries\Buffers;
 
+use \bnphpbot\Libraries\Common;
 use \bnphpbot\Libraries\Buffers\Buffer;
 use \bnphpbot\Libraries\Logger;
 use \bnphpbot\Libraries\MessageItem;
@@ -16,30 +17,30 @@ use \bnphpbot\Libraries\Sockets\BNLSSocket;
 
 class BNLSBuffer extends Buffer {
 
-  public function parsePacket(BNLSSocket &$socket) {
+  public function parsePacket( BNLSSocket &$socket ) {
     if ($this->getLength() < 3) return false;
     $length = $this->readUInt16();
     $id     = $this->readUInt8();
     if ($this->getLength() + 3 < $length) return false;
     switch ($id) {
       case BNLS_NULL::ID: {
-        $pkt = new BNLS_NULL(); $pkt->receive($socket, $this);
+        $pkt = new BNLS_NULL( $socket ); $pkt->receive( $this );
         break;
       }
       case BNLS_AUTHORIZE::ID: {
-        $pkt = new BNLS_AUTHORIZE(); $pkt->receive($socket, $this);
+        $pkt = new BNLS_AUTHORIZE( $socket ); $pkt->receive( $this );
         break;
       }
       case BNLS_AUTHORIZEPROOF::ID: {
-        $pkt = new BNLS_AUTHORIZEPROOF(); $pkt->receive($socket, $this);
+        $pkt = new BNLS_AUTHORIZEPROOF( $socket ); $pkt->receive( $this );
         break;
       }
       case BNLS_REQUESTVERSIONBYTE::ID: {
-        $pkt = new BNLS_REQUESTVERSIONBYTE(); $pkt->receive($socket, $this);
+        $pkt = new BNLS_REQUESTVERSIONBYTE( $socket ); $pkt->receive( $this );
         break;
       }
       case BNLS_VERSIONCHECKEX2::ID: {
-        $pkt = new BNLS_VERSIONCHECKEX2(); $pkt->receive($socket, $this);
+        $pkt = new BNLS_VERSIONCHECKEX2( $socket ); $pkt->receive( $this );
         break;
       }
       default: {
@@ -48,7 +49,7 @@ class BNLSBuffer extends Buffer {
       }
     }
     $message = new MessageItem( MessageItem::TYPE_PACKET_BNLS, $pkt );
-    $socket->getProfile()->queuePush( $message );
+    Common::$message_queue->push( $message );
     return true;
   }
 

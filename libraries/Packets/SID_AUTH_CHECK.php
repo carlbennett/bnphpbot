@@ -6,33 +6,24 @@ use \bnphpbot\Libraries\Buffers\BNETBuffer;
 use \bnphpbot\Libraries\Common;
 use \bnphpbot\Libraries\Logger;
 use \bnphpbot\Libraries\Packets\BNETPacket;
-use \bnphpbot\Libraries\Packets\BNLS_VERSIONCHECKEX2;
 
-class SID_AUTH_INFO extends BNETPacket {
+class SID_AUTH_CHECK extends BNETPacket {
 
-  const ID = 0x50;
+  const ID = 0x51;
 
   /* Client -> Server */
-  public $protocol_id;
-  public $platform_id;
-  public $product_id;
-  public $version_byte;
-  public $product_language;
-  public $local_ip;
-  public $timezone_bias;
-  public $locale_id;
-  public $language_id;
-  public $country_abbreviation;
-  public $country;
+  public $client_token;
+  public $exe_version;
+  public $exe_checksum;
+  public $key_count;
+  public $spawn_key;
+  public $keys;
+  public $exe_info;
+  public $key_owner;
 
   /* Server -> Client */
-  public $logon_type;
-  public $server_token;
-  public $udp_token;
-  public $mpq_filetime;
-  public $mpq_filename;
-  public $checksum;
-  public $signature;
+  public $result;
+  public $result_info;
 
   public function &send() {
     $buffer = new BNETBuffer();
@@ -40,17 +31,22 @@ class SID_AUTH_INFO extends BNETPacket {
     $buffer->writeByte(self::ID);
     $buffer->writeUInt16(4);
 
-    $buffer->writeUInt32($this->protocol_id);
-    $buffer->writeUInt32($this->platform_id);
-    $buffer->writeUInt32($this->product_id);
-    $buffer->writeUInt32($this->version_byte);
-    $buffer->writeUInt32($this->product_language);
-    $buffer->writeUInt32($this->local_ip);
-    $buffer->writeUInt32($this->timezone_bias);
-    $buffer->writeUInt32($this->locale_id);
-    $buffer->writeUInt32($this->language_id);
-    $buffer->writeCString($this->country_abbreviation);
-    $buffer->writeCString($this->country);
+    $buffer->writeUInt32( $this->client_token );
+    $buffer->writeUInt32( $this->exe_version );
+    $buffer->writeUInt32( $this->exe_checksum );
+    $buffer->writeUInt32( $this->key_count );
+    $buffer->writeUInt32( $this->spawn_key );
+
+    foreach ( $this->keys as $key ) {
+      $buffer->writeUInt32( key_length );
+      $buffer->writeUInt32( key_product );
+      $buffer->writeUInt32( key_public );
+      $buffer->writeUInt32( 0 );
+      $buffer->writeRaw( key_data[20] );
+    }
+
+    $buffer->writeCString( $this->exe_info );
+    $buffer->writeCString( $this->key_owner );
 
     $buffer->setPosition(2);
     $buffer->writeUInt16($buffer->getLength());

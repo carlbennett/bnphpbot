@@ -41,23 +41,24 @@ class BNLS_VERSIONCHECKEX2 extends BNLSPacket {
     return $buffer;
   }
 
-  public function receive(&$socket, &$buffer) {
+  public function receive( &$buffer ) {
     Logger::writeLine("RECV: BNLS_VERSIONCHECKEX2", true);
+
     $this->success        = $buffer->readUInt32();
     $this->version        = $buffer->readUInt32();
     $this->checksum       = $buffer->readUInt32();
     $this->version_string = $buffer->readCString();
     $this->cookie         = $buffer->readUInt32();
     $this->version_byte   = $buffer->readUInt32();
-    
-    $profile                    = $socket->getProfile();
+
+    $profile                    = $this->socket->getProfile();
     $state                      = $profile->getState();
     $state["version_check_id"]  = $this->version;
     $state["version_check_str"] = $this->version_string;
     $state["version_check_crc"] = $this->checksum;
     $state["version_byte"]      = $this->version_byte;
 
-    if (!$this->success) {
+    if ( !$this->success ) {
       Logger::writeLine("BNLS: Version check failed.", true);
     }
   }

@@ -20,7 +20,7 @@ class SID_NULL extends BNETPacket {
     return $buffer;
   }
 
-  public function receive(&$socket, &$buffer) {
+  public function receive( &$buffer ) {
     Logger::writeLine("RECV: SID_NULL", true);
   }
 

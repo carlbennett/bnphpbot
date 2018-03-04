@@ -6,6 +6,8 @@ use \Exception;
 use \RuntimeException;
 use \SplObjectStorage;
 use \StdClass;
+
+use \bnphpbot\Libraries\CommonQueue;
 use \bnphpbot\Libraries\Profile;
 
 final class Common {
@@ -22,11 +24,11 @@ final class Common {
   const BNET_PRODUCT_WAR3 = 0x57415233; // Warcraft III Reign of Chaos
   const BNET_PRODUCT_W3DM = 0x5733444D; // Warcraft III Demo
   const BNET_PRODUCT_W3XP = 0x57335850; // Warcraft III The Frozen Throne
-  const BNET_PRODUCT_CHAT = 0x43484154; // Telnet
+  const BNET_PRODUCT_CHAT = 0x43484154; // Chat Gateway Protocol (Telnet)
 
-  const BNET_PLATFORM_IX86 = 0x49583836; // Windows/Linux
-  const BNET_PLATFORM_PMAC = 0x504D4143; // Mac OS Classic
-  const BNET_PLATFORM_XMAC = 0x584D4143; // Mac OS X
+  const BNET_PLATFORM_IX86 = 0x49583836; // Windows/Linux (x86)
+  const BNET_PLATFORM_PMAC = 0x504D4143; // Mac OS Classic (PowerPC)
+  const BNET_PLATFORM_XMAC = 0x584D4143; // Mac OS X (Intel)
 
   const BNLS_PRODUCT_STAR = 0x00000001; // Starcraft Original
   const BNLS_PRODUCT_SEXP = 0x00000002; // Starcraft Broodwar
@@ -44,6 +46,7 @@ final class Common {
   public static $args;
   public static $config;
   public static $exit_trap;
+  public static $message_queue;
   public static $profiles;
 
   public static function convertBNETProductToBNLS($product_id) {
@@ -117,6 +120,7 @@ final class Common {
   }
 
   public static function initialize() {
+    self::$message_queue = new CommonQueue();
     self::$profiles = new SplObjectStorage();
     Profile::loadAllProfiles();
   }
@@ -131,9 +135,10 @@ final class Common {
       if (!is_null($bnet)) {
         $bnet->poll();
       }
-      try { $item = $profile->queuePop(); }
-      catch (RuntimeException $e) { $item = null; }
-      if ($item) Profile::queueProcess($item);
+
+      try { $item = self::$message_queue->pop(); }
+      catch ( RuntimeException $e ) { $item = null; }
+      if ( $item ) { self::$message_queue->process( $item ); }
     }
   }
 

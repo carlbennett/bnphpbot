@@ -25,17 +25,17 @@ class BNLS_REQUESTVERSIONBYTE extends BNLSPacket {
     return $buffer;
   }
 
-  public function receive(&$socket, &$buffer) {
+  public function receive( &$buffer ) {
     Logger::writeLine("RECV: BNLS_REQUESTVERSIONBYTE", true);
+
     $this->product_id   = $buffer->readUInt32();
     $this->version_byte = (
       $this->product_id == 0x00 ? null : $buffer->readUInt32()
     );
 
-    $profile               = $socket->getProfile();
+    $profile               = $this->socket->getProfile();
     $state                 = $profile->getState();
     $state["version_byte"] = $this->version_byte;
-    $profile->getSocketBattlenet()->connect();
   }
 
 }

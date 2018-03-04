@@ -2,6 +2,7 @@
 
 namespace bnphpbot\Libraries\Buffers;
 
+use \bnphpbot\Libraries\Common;
 use \bnphpbot\Libraries\Buffers\Buffer;
 use \bnphpbot\Libraries\Logger;
 use \bnphpbot\Libraries\MessageItem;
@@ -14,7 +15,7 @@ use \bnphpbot\Libraries\Sockets\BNETSocket;
 
 class BNETBuffer extends Buffer {
 
-  public function parsePacket(BNETSocket &$socket) {
+  public function parsePacket( BNETSocket &$socket ) {
     if ($this->getLength() < 4) return false;
     $padding = $this->readUInt8();
     $id      = $this->readUInt8();
@@ -30,15 +31,15 @@ class BNETBuffer extends Buffer {
     if ($this->getLength() + 4 < $length) return false;
     switch ($id) {
       case SID_NULL::ID: {
-        $pkt = new SID_NULL(); $pkt->receive($socket, $this);
+        $pkt = new SID_NULL( $socket ); $pkt->receive( $this );
         break;
       }
       case SID_PING::ID: {
-        $pkt = new SID_PING(); $pkt->receive($socket, $this);
+        $pkt = new SID_PING( $socket ); $pkt->receive( $this );
         break;
       }
       case SID_AUTH_INFO::ID: {
-        $pkt = new SID_AUTH_INFO(); $pkt->receive($socket, $this);
+        $pkt = new SID_AUTH_INFO( $socket ); $pkt->receive( $this );
         break;
       }
       default: {
@@ -47,7 +48,7 @@ class BNETBuffer extends Buffer {
       }
     }
     $message = new MessageItem( MessageItem::TYPE_PACKET_BNET, $pkt );
-    $socket->getProfile()->queuePush( $message );
+    Common::$message_queue->push( $message );
     return true;
   }
 

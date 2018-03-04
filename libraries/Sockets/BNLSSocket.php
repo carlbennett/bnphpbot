@@ -56,9 +56,10 @@ class BNLSSocket extends TCPSocket {
   protected function initialHandshake() {
     $this->initial_handshake = true;
 
-    $pkt = new BNLS_AUTHORIZE();
+    $pkt = new BNLS_AUTHORIZE( $this );
     $pkt->bot_id = "bnphpbot";
-    $this->sendPacket($pkt);
+
+    $this->sendPacket( $pkt );
   }
 
   public function poll() {

@@ -27,15 +27,10 @@ class BNLS_AUTHORIZE extends BNLSPacket {
     return $buffer;
   }
 
-  public function receive(&$socket, &$buffer) {
+  public function receive( &$buffer ) {
     Logger::writeLine("RECV: BNLS_AUTHORIZE", true);
+
     $this->server_code = $buffer->readUInt32();
-    $pkt = new BNLS_AUTHORIZEPROOF();
-    $pkt->checksum = Common::getBNLSChecksum(
-      "bnphpbot" . Common::versionProperties()->bnphpbot,
-      $this->server_code
-    );
-    $socket->sendPacket($pkt);
   }
 
 }

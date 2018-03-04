@@ -19,7 +19,7 @@ class BNLS_NULL extends BNLSPacket {
     return $buffer;
   }
 
-  public function receive(&$socket, &$buffer) {
+  public function receive( &$buffer ) {
     Logger::writeLine("RECV: BNLS_NULL", true);
   }
 

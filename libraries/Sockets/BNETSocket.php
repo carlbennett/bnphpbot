@@ -56,12 +56,15 @@ class BNETSocket extends TCPSocket {
     $this->initial_handshake = true;
     $state = $this->profile->getState();
 
-    $verbyte = (isset($state["version_byte"]) ? $state["version_byte"] :
-      $this->profile->getBattlenetVersionByte());
+    $verbyte = (
+      isset( $state["version_byte"] ) ?
+      $state["version_byte"] : $this->profile->getBattlenetVersionByte()
+    );
 
-    $this->send("\x01", 1, 0); // Protocol byte
+    $this->send("\x01", 1, 0); // Protocol Byte
 
-    $pkt = new SID_AUTH_INFO();
+    $pkt = new SID_AUTH_INFO( $this );
+
     $pkt->protocol_id          = 0;
     $pkt->platform_id          = $this->profile->getBattlenetPlatform();
     $pkt->product_id           = $this->profile->getBattlenetProduct();
@@ -69,12 +72,12 @@ class BNETSocket extends TCPSocket {
     $pkt->product_language     = 0;
     $pkt->local_ip             = 0;
     $pkt->timezone_bias        = 0;
-    $pkt->locale_id            = 0;
-    $pkt->language_id          = 0;
+    $pkt->locale_id            = 1033; // English (US)
+    $pkt->language_id          = 1033; // English (US)
     $pkt->country_abbreviation = "USA";
     $pkt->country              = "United States";
 
-    $this->sendPacket($pkt);
+    $this->sendPacket( $pkt );
   }
 
   public function poll() {
