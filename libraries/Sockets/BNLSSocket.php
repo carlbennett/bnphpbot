@@ -25,11 +25,15 @@ class BNLSSocket extends TCPSocket {
     $this->was_connected     = false;
   }
 
-  public function connect() {
+  public function connect($address = '', $port = 0) {
     $this->initial_handshake = false;
     $this->was_connected     = false;
-    $hostname                = $this->profile->getBNLSHostname();
-    $port                    = $this->profile->getBNLSPort();
+    $hostname                = (
+      !empty( $address ) ? $address : $this->profile->getBNLSHostname()
+    );
+    $port                    = (
+      $port !== 0 ? $port : $this->profile->getBNLSPort()
+    );
     $timeout                 = 3;
     $curtime                 = microtime(true);
     $maxtime                 = $curtime + $timeout;

@@ -20,7 +20,7 @@ class BNLS_AUTHORIZEPROOF extends BNLSPacket {
     $buffer->writeUInt16(7);
     $buffer->writeByte(self::ID);
 
-    $buffer->writeUInt32($this->checksum);
+    $buffer->writeUInt32( (int) $this->checksum );
 
     $buffer->setPosition(0);
     Logger::writeLine("SEND: BNLS_AUTHORIZEPROOF", true);

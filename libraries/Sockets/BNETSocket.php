@@ -24,11 +24,15 @@ class BNETSocket extends TCPSocket {
     $this->was_connected     = false;
   }
 
-  public function connect() {
+  public function connect($address = '', $port = 0) {
     $this->initial_handshake = false;
     $this->was_connected     = false;
-    $hostname                = $this->profile->getBattlenetHostname();
-    $port                    = $this->profile->getBattlenetPort();
+    $hostname                = (
+      !empty( $address ) ? $address : $this->profile->getBattlenetHostname()
+    );
+    $port                    = (
+      $port !== 0 ? $port : $this->profile->getBattlenetPort()
+    );
     $timeout                 = 3;
     $curtime                 = microtime(true);
     $maxtime                 = $curtime + $timeout;

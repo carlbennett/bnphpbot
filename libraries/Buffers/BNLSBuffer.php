@@ -4,11 +4,14 @@ namespace bnphpbot\Libraries\Buffers;
 
 use \bnphpbot\Libraries\Buffers\Buffer;
 use \bnphpbot\Libraries\Logger;
+use \bnphpbot\Libraries\MessageItem;
+
 use \bnphpbot\Libraries\Packets\BNLS_AUTHORIZE;
 use \bnphpbot\Libraries\Packets\BNLS_AUTHORIZEPROOF;
 use \bnphpbot\Libraries\Packets\BNLS_NULL;
 use \bnphpbot\Libraries\Packets\BNLS_REQUESTVERSIONBYTE;
 use \bnphpbot\Libraries\Packets\BNLS_VERSIONCHECKEX2;
+
 use \bnphpbot\Libraries\Sockets\BNLSSocket;
 
 class BNLSBuffer extends Buffer {
@@ -44,6 +47,8 @@ class BNLSBuffer extends Buffer {
         return false;
       }
     }
+    $message = new MessageItem( MessageItem::TYPE_PACKET_BNLS, $pkt );
+    $socket->getProfile()->queuePush( $message );
     return true;
   }
 

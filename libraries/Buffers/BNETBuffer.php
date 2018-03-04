@@ -5,9 +5,11 @@ namespace bnphpbot\Libraries\Buffers;
 use \bnphpbot\Libraries\Buffers\Buffer;
 use \bnphpbot\Libraries\Logger;
 use \bnphpbot\Libraries\MessageItem;
+
 use \bnphpbot\Libraries\Packets\SID_AUTH_INFO;
 use \bnphpbot\Libraries\Packets\SID_NULL;
 use \bnphpbot\Libraries\Packets\SID_PING;
+
 use \bnphpbot\Libraries\Sockets\BNETSocket;
 
 class BNETBuffer extends Buffer {
@@ -44,9 +46,8 @@ class BNETBuffer extends Buffer {
         return false;
       }
     }
-    $socket->getProfile()->queuePush(new MessageItem(
-      MessageItem::TYPE_PACKET_BNET, $pkt
-    ));
+    $message = new MessageItem( MessageItem::TYPE_PACKET_BNET, $pkt );
+    $socket->getProfile()->queuePush( $message );
     return true;
   }
 

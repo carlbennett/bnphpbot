@@ -105,7 +105,8 @@ class Buffer {
   }
 
   public function writeUInt8($val) {
-    return $this->writeRaw(chr($val & 0xFF));
+    $value = chr( $val & 0xFF );
+    return $this->writeRaw( $value );
   }
 
   public function writeUInt16($val) {
